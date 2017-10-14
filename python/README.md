@@ -4,7 +4,9 @@
 
 
 Project Name: CServo
+
 File Name: cservo.py
+
 Type: Python Library
 
 Purpose: Uses a I2C PCA9685 controller (https://www.adafruit.com/product/815) To automate servo movments useing 'routine' files.
