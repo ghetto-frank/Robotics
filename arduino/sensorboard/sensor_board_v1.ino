@@ -28,7 +28,7 @@ int ldr_pin = 0;
 
 String readString; //seralport in string.
 
-
+// ----------------------------main setup------------------------
 void setup() {
     Serial.begin(115200); //baud rate.
     pinMode(13, OUTPUT); //activity LED on pin 13
@@ -36,7 +36,7 @@ void setup() {
 
     boot_led_flash();
 }
-
+// --------------------------------------------------------------
 
 
 // ------------------------------------------------------------------------------------------------------------------------      
@@ -143,7 +143,7 @@ void PrintSonarVals() {
     digitalWrite(13, HIGH); 
     
     String out_line = "=!v!=Sonar: ";
-    int sonar_read = 0; //holds single sonar reading. 
+    int sonar_read = 0; //holds a single sonar reading. 
 
 
     for (int cur_s = 0; cur_s < SONAR_NUM; cur_s++) {
@@ -152,13 +152,13 @@ void PrintSonarVals() {
         // ------- get new values --------
         sonar_read = sonar[cur_s].ping_in();
  
-        if (sonar_read > 0) { // oviod 0's, seems to randomly get them 
-            sonar_vals[cur_s] = sonar_read;
+        if (sonar_read > 0) { // oviod 0's
+            sonar_vals[cur_s] = sonar_read; //only replace the value in the global array if >0. (get 0's often)
         }
         // --------------
-    // ----make output string-----
-    out_line += sonar_vals[cur_s];
-    out_line += ", ";
+        // ----make output string-----
+        out_line += sonar_vals[cur_s];
+        out_line += ", ";
     }
 
 
