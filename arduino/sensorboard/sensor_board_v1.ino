@@ -22,11 +22,7 @@ NewPing sonar[SONAR_NUM] = {     // Sensor object array.
 int sonar_vals[SONAR_NUM]; //array holds sonar values (inch)
 // ----
 
-
-
 int ldr_pin = 0;
-
-
 
 
 
@@ -69,49 +65,41 @@ void loop() { //---START MAIN LOOP
 
         // ----------------Get /info command----------------
         if (readString.substring(0,9) == "get /info"){
-    
-            digitalWrite(13, HIGH); // (led on)
+      
             tell_info();
         }
         // -------------------------------------------------
 
-
-
         // ----------------Get /sonar command---------------
         if (readString.substring(0,10) == "get /sonar"){
     
-            digitalWrite(13, HIGH); // (led on)
             PrintSonarVals();
         }
         // -----------------------------------------------
 
-
-
         // ----------------Get /ldr command---------------
         if (readString.substring(0,8) == "get /ldr"){
     
-            digitalWrite(13, HIGH); // (led on)
             PrintLdrVals();
         }
         // -----------------------------------------------
-
-
 
         // ----------------led /on command---------------
         if (readString.substring(0,7) == "led /on"){
     
             digitalWrite(13, HIGH); // (led on)
+          
             digitalWrite(12, HIGH); // (led on)
             Serial.println("=!v!=LED ON");
             tell_done();
         }
         // -----------------------------------------------
 
-
         // ----------------led /off command---------------
         if (readString.substring(0,8) == "led /off"){
     
             digitalWrite(13, HIGH); // (led on)
+          
             digitalWrite(12, LOW); // (led off)
             Serial.println("=!v!=LED OFF");
             tell_done();
@@ -120,22 +108,14 @@ void loop() { //---START MAIN LOOP
 
 
 
-
     } // ---END OF SERIAL COMMANDS---
   
 delay(1); //stop maxing out CPU.
 }//---END MAIN LOOP.  
 // ------------------------------------------------------------------------------------------------------------------------      
+
  
-  
-  
-  
-  
-  
 //--------------------------------FUNTIONS---------------------------------
-
-
-
 
 
 
@@ -156,10 +136,6 @@ void boot_led_flash() {
     Serial.println("SENSOR BOARD READY.\r\n");
 }
 // --------------------------------------------------
-
-
-
-
 
 // --------------------------------------------------
 void PrintSonarVals() {
@@ -193,10 +169,6 @@ void PrintSonarVals() {
 }
 // --------------------------------------------------
 
-
-
-
-
 // --------------------------------------------------
 void PrintLdrVals() {
   
@@ -220,25 +192,15 @@ void PrintLdrVals() {
 }
 // --------------------------------------------------
 
-
-
-
-
-
-
-
 // --------------------------------------------------
 void tell_info() {
-
+  
+    digitalWrite(13, HIGH); // (led on)
     Serial.println("=!v!=Sensor Board V1.0");  
       
     tell_done();
 }
 // --------------------------------------------------
-
-
-
-
 
 // --------------------------------------------------
 void tell_done() { // (so serial client knows that where done).
