@@ -26,7 +26,7 @@ int ldr_pin = 0;
 
 
 
-String readString; //seralport in string.
+//String readString; //seralport in string.
 
 // ----------------------------main setup------------------------
 void setup() {
@@ -47,16 +47,14 @@ void loop() { //---START MAIN LOOP
     if (Serial.available()) { // ---START OF SERIAL COMMANDS---
    
         // -----------------------Build seralport data into readString------------------        
-        readString = "";
+        String readString = "";
     
         while (Serial.available()) {
             delay(2);
-        
             if (Serial.available() > 0) {
                 char c = Serial.read();  //gets one byte from serial buffer        
                 readString += c; //makes the string readString    
             } 
-         
         }
     
         readString.toLowerCase();  //nice eh
