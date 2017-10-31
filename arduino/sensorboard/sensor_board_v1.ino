@@ -1,5 +1,5 @@
 
-#include <NewPing.h>
+#include <NewPing.h> //https://github.com/PaulStoffregen/NewPing
 
 #define sonar_total 4 // Number of sonar sensors.
 #define MAX_DISTANCE 999 // Maximum distance (in cm) to ping.
@@ -13,14 +13,11 @@ NewPing sonar[sonar_total] = {     // Sensor object array.
 };
 // --------------------------------------------
 
-
 String ver_num = "1.1";
-
 
 // ---Sensor Reading Storage Arrays.
 int sonar_vals[sonar_total]; //array holds sonar values (inch)
 int ldr_pin = 0; //single int.
-
 
 // ----------------------------main setup------------------------
 void setup() {
@@ -31,7 +28,6 @@ void setup() {
     boot_led_flash();
 }
 // --------------------------------------------------------------
-
 
 // ------------------------------------------------------------------------------------------------------------------------      
 
@@ -125,13 +121,13 @@ delay(1); //stop maxing out CPU.
 }//---END MAIN LOOP.  
 // ------------------------------------------------------------------------------------------------------------------------      
  
-//--------------------------------FUNTIONS---------------------------------
+//==============================FUNTIONS==============================
 
 
 // --------------------------------------------------
 void boot_led_flash() {
   
-    delay(60);
+    delay(60); //make sure serial comms are ready..
     Serial.println("\r\nSENSOR BOARD BOOT...");
 
     for (int flash_delay = 15; flash_delay > 0; flash_delay--) {
