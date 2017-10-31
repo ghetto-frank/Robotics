@@ -1,32 +1,26 @@
 
 #include <NewPing.h>
 
-#define SONAR_NUM 4 // Number of sonar sensors.
+#define sonar_total 4 // Number of sonar sensors.
 #define MAX_DISTANCE 999 // Maximum distance (in cm) to ping.
 
 // ---------------add sonar sensors------------
-NewPing sonar[SONAR_NUM] = {     // Sensor object array.
-  NewPing(2, 2, MAX_DISTANCE), // Each sensor's trigger pin, echo pin, and max distance to ping.
-  NewPing(3, 3, MAX_DISTANCE),
-  NewPing(4, 4, MAX_DISTANCE),
-  NewPing(5, 5, MAX_DISTANCE),
-  //NewPing(6, 6, MAX_DISTANCE),
-  //NewPing(7, 7, MAX_DISTANCE),
-  //NewPing(8, 8, MAX_DISTANCE),
-  //NewPing(9, 9, MAX_DISTANCE),
+NewPing sonar[sonar_total] = {     // Sensor object array.
+    NewPing(2, 2, MAX_DISTANCE), // Each sensor's trigger pin, echo pin, and max distance to ping.
+    NewPing(3, 3, MAX_DISTANCE),
+    NewPing(4, 4, MAX_DISTANCE),
+    NewPing(5, 5, MAX_DISTANCE),
 };
 // --------------------------------------------
 
 
-// ---For PrintSonarVals Function:
-int sonar_vals[SONAR_NUM]; //array holds sonar values (inch)
-// ----
-
-int ldr_pin = 0;
+String ver_num = "1.1";
 
 
+// ---Sensor Reading Storage Arrays.
+int sonar_vals[sonar_total]; //array holds sonar values (inch)
+int ldr_pin = 0; //single int.
 
-//String readString; //seralport in string.
 
 // ----------------------------main setup------------------------
 void setup() {
@@ -61,29 +55,48 @@ void loop() { //---START MAIN LOOP
         // -----------------------------------------------------------------------------      
 
 
-        // ----------------Get /info command----------------
-        if (readString.substring(0,9) == "get /info"){
+        // ----------------Get /ver command----------------
+        if (readString.substring(0,9) == "get /ver"){ //return basic info (helps test everything is working as it should.)
       
-            tell_info();
+            digitalWrite(13, HIGH); // (led on)
+            Serial.print("=!v!=Sensor Board V");  
+            Serial.println(ver_num);  
+            tell_done();
         }
         // -------------------------------------------------
 
-        // ----------------Get /sonar command---------------
-        if (readString.substring(0,10) == "get /sonar"){
-    
-            PrintSonarVals();
+        // ----------------Get /allsonar command---------------
+        if (readString.substring(0,13) == "get /allsonar"){ //returns comma seporated values for all sonar sensors.
+          
+            digitalWrite(13, HIGH); 
+            Serial.println(GetAllSonar());
+            tell_done(); 
+        }
+        // -----------------------------------------------
+        
+        // ----------------Get /sonar command--------------
+        if (readString.substring(0,11) == "get /sonar:"){ //returns single sonar value.
+          
+            digitalWrite(13, HIGH); 
+
+            int single_sonar;
+            single_sonar = readString.substring(11,readString.length()).toInt();
+            
+            Serial.println(GetSonarValue(single_sonar));
+            tell_done(); 
         }
         // -----------------------------------------------
 
         // ----------------Get /ldr command---------------
-        if (readString.substring(0,8) == "get /ldr"){
+        if (readString.substring(0,8) == "get /ldr"){ //returns the value of the ldr sensor.
     
-            PrintLdrVals();
+            Serial.println(GetLdrValue());
+            tell_done(); 
         }
         // -----------------------------------------------
 
         // ----------------led /on command---------------
-        if (readString.substring(0,7) == "led /on"){
+        if (readString.substring(0,7) == "led /on"){ //underglow led on.
     
             digitalWrite(13, HIGH); // (led on)
           
@@ -94,7 +107,7 @@ void loop() { //---START MAIN LOOP
         // -----------------------------------------------
 
         // ----------------led /off command---------------
-        if (readString.substring(0,8) == "led /off"){
+        if (readString.substring(0,8) == "led /off"){ //underglow led off.
     
             digitalWrite(13, HIGH); // (led on)
           
@@ -111,15 +124,14 @@ void loop() { //---START MAIN LOOP
 delay(1); //stop maxing out CPU.
 }//---END MAIN LOOP.  
 // ------------------------------------------------------------------------------------------------------------------------      
-
  
 //--------------------------------FUNTIONS---------------------------------
 
 
-
 // --------------------------------------------------
 void boot_led_flash() {
-
+  
+    delay(60);
     Serial.println("\r\nSENSOR BOARD BOOT...");
 
     for (int flash_delay = 15; flash_delay > 0; flash_delay--) {
@@ -136,39 +148,56 @@ void boot_led_flash() {
 // --------------------------------------------------
 
 // --------------------------------------------------
-void PrintSonarVals() {
+String GetSonarValue(int sonar_num) {
 
-    digitalWrite(13, HIGH); 
-    
-    String out_line = "=!v!=Sonar: ";
-    int sonar_read = 0; //holds a single sonar reading. 
-
-
-    for (int cur_s = 0; cur_s < SONAR_NUM; cur_s++) {
-      
-        delay(4);
-        // ------- get new values --------
-        sonar_read = sonar[cur_s].ping_in();
- 
-        if (sonar_read > 0) { // oviod 0's
-            sonar_vals[cur_s] = sonar_read; //only replace the value in the global array if >0. (get 0's often)
-        }
-        // --------------
-        // ----make output string-----
-        out_line += sonar_vals[cur_s];
-        out_line += ", ";
+    if (sonar_num < 0 or sonar_num > sonar_total) { //non valid sonar number (out of range)
+        return "error: out of range.";
     }
 
+    int sonar_read = 0; //holds a single sonar reading. 
+    String out_line = "=!v!=Sonar";
 
-    out_line.remove(out_line.length() - 2, 2); //remove last ", ".
-    Serial.println(out_line);
-  
-    tell_done();  
+    out_line += sonar_num;
+    out_line += ": ";
+    
+    sonar_read = sonar[sonar_num].ping_in(); //get distence from sensor in inch.
+ 
+    if (sonar_read > 0) { // oviod 0's
+        sonar_vals[sonar_num] = sonar_read; //only replace the value in the global array if >0. (get 0's often)
+    }
+        
+    // ----make output string-----
+    out_line += sonar_vals[sonar_num];
+    return out_line;
 }
 // --------------------------------------------------
 
 // --------------------------------------------------
-void PrintLdrVals() {
+String GetAllSonar() {
+
+    int sonar_read = 0; //holds a single sonar reading.     
+    String out_line = "=!v!=All-Sonar: ";
+
+    for (int cur_s = 0; cur_s < sonar_total; cur_s++) {
+      
+        delay(3); //delay between sensor readingings as may interurpt each other in quick susesion. 
+        sonar_read = sonar[cur_s].ping_in(); //get distence from sensor in inch.
+ 
+        if (sonar_read > 0) { // oviod 0's
+            sonar_vals[cur_s] = sonar_read; //only replace the value in the global array if >0. (get 0's often)
+        }
+        
+        // ----make output string-----
+        out_line += sonar_vals[cur_s];
+        out_line += ", ";
+    }
+    out_line.remove(out_line.length() - 2, 2); //remove last ", ".
+    return out_line; 
+}
+// --------------------------------------------------
+
+// --------------------------------------------------
+String GetLdrValue() {
   
     digitalWrite(13, HIGH); 
 
@@ -184,19 +213,7 @@ void PrintLdrVals() {
     // cheeky way of makeing the ldr 'more sensetive' and a good range. could of used MAP() but think this is lighter.
 
     out_line += ldr_reading;
-    Serial.println(out_line); //print reading
-  
-    tell_done();
-}
-// --------------------------------------------------
-
-// --------------------------------------------------
-void tell_info() {
-  
-    digitalWrite(13, HIGH); // (led on)
-    Serial.println("=!v!=Sensor Board V1.0");  
-      
-    tell_done();
+    return out_line;
 }
 // --------------------------------------------------
 
@@ -207,4 +224,3 @@ void tell_done() { // (so serial client knows that where done).
     digitalWrite(13, LOW); //activity led off.
 }
 // --------------------------------------------------
-
